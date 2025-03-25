@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Noa Chatbot</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .chatbox {
+            width: 60%;
+            margin: auto;
+            height: 500px;
+            overflow-y: scroll;
+            background-color: #222;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .user { color: yellow; }
+        .bot { color: lightgreen; }
+        input, button {
+            width: 60%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            background-color: grey;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button { cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Noa Chatbot</h1>
+    <div class="chatbox" id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+    <button onclick="sendMessage()">Send</button>
+    
+    <script>
+        function handleKeyPress(event) {
+            if (event.key === "Enter") sendMessage();
+        }
+
+        function sendMessage() {
+            let userText = document.getElementById("userInput").value;
+            if (!userText.trim()) return;
+
+            let chatbox = document.getElementById("chatbox");
+            chatbox.innerHTML += `<p class='user'>You: ${userText}</p>`;
+            document.getElementById("userInput").value = "";
+
+            fetch('/chat', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: userText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                chatbox.innerHTML += `<p class='bot'>Noa: ${data.response}</p>`;
+                chatbox.scrollTop = chatbox.scrollHeight;
+            });
+        }
+    </script>
+</body>
+</html>
